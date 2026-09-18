@@ -61,8 +61,15 @@ let
       (map (d: "-L${d} -Xlinker -rpath -Xlinker ${d}") cudaLibDirs);
 
   resolvedCudaArch = if cudaArch != null then cudaArch else builtins.head (cudaPackages.flags.realArches or [ "sm_89" ]);
-  clrGpuTargets = (rocmPackages.clr.localGpuTargets or [ ]) ++ (rocmPackages.clr.gpuTargets or [ ]);
-  resolvedRocmArch = if rocmArch != null then rocmArch else if clrGpuTargets != [ ] then builtins.head clrGpuTargets else "gfx1151";
+
+  # ROCm arch default: the project's own upstream target (strix-halo ==
+  # gfx1151). Deliberately NOT `head (clr.gpuTargets)` — bare
+  # `rocmPackages.clr.localGpuTargets` is null unless an arch-scoped
+  # rocmPackages is used, so the fallback would silently pick the first
+  # (oldest) supported target (gfx900), which rocwmma rejects ("static
+  # assertion failed: Unsupported architecture"). Set `rocmArch` to build
+  # for another GPU.
+  resolvedRocmArch = if rocmArch != null then rocmArch else "gfx1151";
 
   # -march for host code; empty (baseline) unless cpuTarget is set (upstream embeds NATIVE_CPU_FLAG everywhere).
   marchFlag = lib.optionalString (cpuTarget != null) "-march=${cpuTarget}";
