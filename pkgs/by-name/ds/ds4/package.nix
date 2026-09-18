@@ -156,6 +156,9 @@ stdenv.mkDerivation (finalAttrs: {
     hash = "sha256-d0TRJH5/cNlDrgJy2i9eEUuSAlnka0BvxDXlXIwMwrE=";
   };
 
+  __structuredAttrs = true;
+  strictDeps = true;
+
   enableParallelBuilding = true;
 
   nativeBuildInputs =
@@ -170,20 +173,21 @@ stdenv.mkDerivation (finalAttrs: {
       cudaPackages.libcublas
     ];
 
-  makeFlags = [ "NATIVE_CPU_FLAG=${marchFlag}" ] ++ backendMakeFlags;
+  # With __structuredAttrs, makeFlags is a list passed verbatim to make (no
+  # word splitting), so the space-containing entries above can live here.
+  makeFlags =
+    [ "NATIVE_CPU_FLAG=${marchFlag}" ]
+    ++ backendMakeFlags
+    ++ backendMakeFlagsArray;
   buildFlags = [ buildTarget ];
-
-  # Pass space-containing make variables as a quoted array so they aren't
-  # word-split (see backendMakeFlagsArray note above).
-  preBuild = lib.optionalString (backendMakeFlagsArray != [ ]) ''
-    makeFlagsArray+=(${lib.escapeShellArgs backendMakeFlagsArray})
-  '';
 
   # CPU-runnable tests only; the GPU variants are validated on real hardware.
   doCheck = backend == "cpu";
   checkPhase = ''
     runHook preCheck
-    make $makeFlags tests/test_layer_pack tests/test_gpu_args q4k-dot-test mxfp4-dot-test
+    local flagsArray=()
+    concatTo flagsArray makeFlags
+    make "''${flagsArray[@]}" tests/test_layer_pack tests/test_gpu_args q4k-dot-test mxfp4-dot-test
     ./tests/test_layer_pack
     ./tests/test_gpu_args
     ./ds4-eval --self-test-extractors
