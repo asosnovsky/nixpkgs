@@ -2404,11 +2404,19 @@
     githubId = 181835726;
     name = "ArisoN";
   };
+
   ariutta = {
     email = "anders.riutta@gmail.com";
     github = "ariutta";
     githubId = 1296771;
     name = "Anders Riutta";
+  };
+
+  asosnovsky = {
+    email = "ariel@sosnovsky.ca";
+    github = "asosnovsky";
+    githubId = 7451445;
+    name = "Ari Sosnovsky";
   };
   arjan-s = {
     email = "github@anymore.nl";
