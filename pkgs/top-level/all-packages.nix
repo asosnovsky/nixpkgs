@@ -381,7 +381,6 @@ with pkgs;
   ollama-cuda = callPackage ../by-name/ol/ollama/package.nix { acceleration = "cuda"; };
   ollama-vulkan = callPackage ../by-name/ol/ollama/package.nix { acceleration = "vulkan"; };
 
-  # Multi-backend variants of ds4 (see ../by-name/ds/ds4/package.nix); `ds4` itself comes from by-name.
   ds4-rocm = callPackage ../by-name/ds/ds4/package.nix { backend = "rocm"; };
   ds4-cuda = callPackage ../by-name/ds/ds4/package.nix { backend = "cuda"; };
 

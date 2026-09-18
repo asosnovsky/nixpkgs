@@ -5,8 +5,6 @@ let
   staticUser = cfg.user != null && cfg.group != null;
 
   # Build the ds4-server command line from options.
-  # optionalString returns "" when false; filter those out so we don't get
-  # spurious leading/trailing whitespace in the final command line.
   serverArgs = with cfg;
     lib.concatStringsSep " " (lib.filter (x: x != "") [
       "-m ${lib.escapeShellArg model}"
@@ -26,7 +24,7 @@ let
 in
 {
   options.services.ds4 = {
-    enable = lib.mkEnableOption "the ds4-server DwarfStar (DeepSeek V4 Flash/PRO) local inference HTTP API";
+    enable = lib.mkEnableOption "the ds4-server DwarfStar local inference HTTP API";
 
     package = lib.mkPackageOption pkgs "ds4" {
       example = "pkgs.ds4-rocm";
@@ -214,7 +212,7 @@ in
     environment.systemPackages = [ cfg.package ];
 
     systemd.services.ds4-server = {
-      description = "ds4-server — DwarfStar local inference HTTP API (DeepSeek V4 Flash/PRO)";
+      description = "ds4-server — DwarfStar local inference HTTP API";
       documentation = [
         "https://github.com/antirez/ds4"
         "https://github.com/antirez/ds4#readme"
